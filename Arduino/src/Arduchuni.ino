@@ -1,27 +1,39 @@
+#include "SevenSegmentLed.hpp"
+
 #define INDICATOR_START 8
-#define INDICATOR_END 13
 #define SENSOR_START 0
-#define SENSOR_END 0
+#define N_SENSORS 1
+#define LED_START 22
 #define INDICATOR_BRIGHTNESS 128
 
-const int num_sensors = SENSOR_END-SENSOR_START+1;
+const int ledPins[4+7] = {
+  LED_START, LED_START+1, LED_START+2, LED_START+3,
+  LED_START+4, LED_START+5, LED_START+6, LED_START+7, LED_START+8, LED_START+9, LED_START+10
+};
+const SevenSegmentLed<4> led(ledPins, ledPins+4);
 
 void setup() {
-  for (int p = INDICATOR_START; p <= INDICATOR_END; ++p) {
-    pinMode(p, OUTPUT);
+  for (int i = 0; i < N_SENSORS; ++i) {
+    pinMode(i + INDICATOR_START, OUTPUT);
+  }
+  for (int i = 0; i < sizeof(ledPins)/sizeof(*ledPins), ++i) {
+    pinMode(ledPins[i], OUTPUT);
   }
   Serial.begin(9600);
 }
 
 void loop() {
-  for (int i = 0; i < num_sensors; ++i) {
+  for (int i = 0; i < N_SENSORS; ++i) {
     int pSensor = i + SENSOR_START;
     int pInd = i + INDICATOR_START;
 
     int val = analogRead(pSensor);
     int brightness = val > 1000 ? INDICATOR_BRIGHTNESS : 0;
     analogWrite(pInd, brightness);
-    //Serial.println(val);
+
+    if (i == 0) {
+      led.setNumber(val);
+    }
   }
 
   delay(10);

@@ -21,13 +21,7 @@ class SevenSegmentLed {
         0b1101101, 0b1111101, 0b0000111, 0b1111111, 0b1101111
     }
 
-    SevenSegmentLed(int digitPins[N], int dataPins[7]) {
-        for (int i = 0; i < N; ++i) {
-            m_digitPins[i] = digitPins[i];
-        }
-        for (int i = 0; i < 7; ++i) {
-            m_dataPins[i] = dataPins[i];
-        }
+    SevenSegmentLed(int* digitPins, int* dataPins) : m_digitPins(digitPins), m_dataPins(dataPins) {
     }
 
     void setDigit(int digit, int data) {
@@ -65,6 +59,6 @@ class SevenSegmentLed {
     }
 
     private:
-    int m_digitPins[N];
-    int m_dataPins[7];
+    int* m_digitPins;
+    int* m_dataPins;
 }
