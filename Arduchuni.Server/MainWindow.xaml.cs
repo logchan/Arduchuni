@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO.Ports;
 using System.Windows;
 
 namespace Arduchuni.Server {
@@ -6,6 +7,8 @@ namespace Arduchuni.Server {
         private const int NumSensors = 6;
 
         private readonly List<Sensor> _sensors = new List<Sensor>(NumSensors);
+        private readonly List<string> _portNames = new List<string>();
+        private SerialPort _serial = null;
 
         public MainWindow() {
             InitializeComponent();
@@ -18,6 +21,14 @@ namespace Arduchuni.Server {
                     view.Sensor = sensor;
                 }
             }
+        }
+
+        private void ComRefreshBtn_Click(object sender, RoutedEventArgs e) {
+            
+        }
+
+        private void ComSetBtn_Click(object sender, RoutedEventArgs e) {
+
         }
     }
 }

@@ -8,7 +8,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
@@ -27,5 +27,14 @@
             <local:SensorView x:Name="Sensor4" Grid.Row="4"></local:SensorView>
             <local:SensorView x:Name="Sensor5" Grid.Row="5"></local:SensorView>
         </Grid>
+        <StackPanel Orientation="Vertical" Grid.Column="1">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <Button x:Name="ComRefreshBtn" Click="ComRefreshBtn_Click">Refresh</Button>
+                    <Button x:Name="ComSetBtn" Click="ComSetBtn_Click">Set</Button>
+                </StackPanel>
+                <ComboBox DockPanel.Dock="Left" Name="ComCombo"></ComboBox>
+            </DockPanel>
+        </StackPanel>
     </Grid>
 </Window>

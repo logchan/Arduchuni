@@ -7,7 +7,19 @@
              mc:Ignorable="d" 
              x:Name="ThisView"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <SolidColorBrush Color="Green" x:Key="ActiveBrush"></SolidColorBrush>
+        <SolidColorBrush Color="Red" x:Key="InactiveBrush"></SolidColorBrush>
+        <local:BooleanConverter TrueValue="{StaticResource ActiveBrush}" FalseValue="{StaticResource InactiveBrush}" x:Key="ActiveConverter"></local:BooleanConverter>
+    </UserControl.Resources>
     <Grid DataContext="{Binding ElementName=ThisView, Path=Sensor}">
-        <TextBlock Text="{Binding Path=Value}"></TextBlock>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Canvas Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Ellipse Width="32" Height="32" Canvas.Top="4" Canvas.Left="4" Fill="{Binding Activated, Converter={StaticResource ActiveConverter}}"></Ellipse>
+        </Canvas>
+        <TextBlock HorizontalAlignment="Left" Margin="8 0" VerticalAlignment="Center" Grid.Column="1" Text="{Binding Value}" FontSize="32"></TextBlock>
     </Grid>
 </UserControl>

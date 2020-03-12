@@ -60,6 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BooleanConverter.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Sensor.cs" />
     <Compile Include="SensorView.xaml.cs">
