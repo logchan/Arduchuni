@@ -18,8 +18,8 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Canvas Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Ellipse Width="32" Height="32" Canvas.Top="4" Canvas.Left="4" Fill="{Binding Activated, Converter={StaticResource ActiveConverter}}"></Ellipse>
+            <Ellipse Width="32" Height="32" Canvas.Top="4" Canvas.Left="4" Fill="{Binding Active, Converter={StaticResource ActiveConverter}}"></Ellipse>
         </Canvas>
-        <TextBlock HorizontalAlignment="Left" Margin="8 0" VerticalAlignment="Center" Grid.Column="1" Text="{Binding Value}" FontSize="32"></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="8 0" VerticalAlignment="Center" Grid.Column="1" Text="{Binding Value}" FontSize="24"></TextBlock>
     </Grid>
 </UserControl>

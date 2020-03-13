@@ -1,4 +1,4 @@
-#define DEV_VERSION
+//#define DEV_VERSION
 
 #define LOOP_DELAY 5
 #define N_SENSORS 6
@@ -42,8 +42,11 @@ void loop() {
     values[i] = analogRead(sensorPins[i]);
   }
 
-  Serial.write((void*)values, sizeof(values));
-  Serial.flush();
+  if (Serial.read() == 0x42) {
+    Serial.write((unsigned char*)values, sizeof(values));
+    Serial.flush();
+    delay(1);
+  }
 
 #ifdef DEV_VERSION
   for (int i = 0; i < N_SENSORS; ++i) {
@@ -52,11 +55,10 @@ void loop() {
 
   if (led_counter % LED_EVERY == 0) {
     led_counter = 0;
-    led.setNumber(values[0]);
+    led.setNumber(values[3]);
   }
   led_counter += 1;
   led.loop();
+  delay(5);
 #endif
-
-  delay(LOOP_DELAY);
 }
