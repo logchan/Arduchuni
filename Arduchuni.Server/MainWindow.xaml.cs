@@ -9,14 +9,13 @@ using System.Windows;
 namespace Arduchuni.Server {
     public partial class MainWindow : Window {
         private const int NumSensors = 6;
-        private const int ReadEvery = 20;
+        private const int ReadEvery = 16;
         private const string ConfigFile = "Arduchuni.Server.json";
 
-        private Config _config = new Config();
+        private readonly Config _config = new Config();
         public Config Config => _config;
 
         private readonly List<Sensor> _sensors = new List<Sensor>(NumSensors);
-        private readonly List<SensorView> _sensorViews = new List<SensorView>();
 
         private volatile bool _serialStop = true;
         private Thread _serialThread;
@@ -41,7 +40,6 @@ namespace Arduchuni.Server {
                 var view = FindName($"Sensor{i}") as SensorView;
                 Debug.Assert(view != null);
                 view.Sensor = sensor;
-                _sensorViews.Add(view);
             }
 
             RefreshCom();
@@ -53,17 +51,20 @@ namespace Arduchuni.Server {
 
         private void RefreshCom() {
             ComCombo.Items.Clear();
-            foreach (var name in SerialPort.GetPortNames()) {
+
+            var names = SerialPort.GetPortNames();
+            var selected = 0;
+            for (var i = 0; i < names.Length; ++i) {
+                var name = names[i];
                 ComCombo.Items.Add(name);
+
+                if (name == _config.ComName) {
+                    selected = i;
+                }
             }
 
-            if (_config.ComName != null) {
-                for (var i = 0; i < ComCombo.Items.Count; ++i) {
-                    if (ComCombo.Items[i] as string == _config.ComName) {
-                        ComCombo.SelectedIndex = i;
-                        break;
-                    }
-                }
+            if (ComCombo.Items.Count > selected) {
+                ComCombo.SelectedIndex = selected;
             }
         }
 
@@ -85,40 +86,40 @@ namespace Arduchuni.Server {
 
         private void SerialThreadWork() {
             var serial = new SerialPort(_config.ComName) {
-                BaudRate = 9600, 
-                ReadTimeout = Int32.MaxValue
+                BaudRate = 19200, 
+                ReadTimeout = 1000
             };
+            var buffer = new byte[serial.ReadBufferSize];
+            var cmd = new byte[] { 0x42 };
 
             try {
                 serial.Open();
-                serial.DiscardInBuffer();
-
-                var cmd = new byte[] { 0x42 };
-                var buffer = new byte[2 * 6];
+                
                 while (!_serialStop) {
-                    Thread.Sleep(ReadEvery);
-                    
                     serial.Write(cmd, 0, 1);
-                    var length = serial.Read(buffer, 0, buffer.Length);
-                    if (length == 0) {
+                    Thread.Sleep(ReadEvery);
+
+                    var count = serial.BaseStream.Read(buffer, 0, buffer.Length);
+                    if (count != 16) {
+                        Debug.WriteLine(count);
                         continue;
                     }
 
-                    if (length == 12) {
-                        for (var i = 0; i < 6; ++i) {
-                            var value = buffer[2 * i] + buffer[2 * i + 1] * 256;
-                            _sensors[i].Value = value;
-                            _sensors[i].Active = value > _config.Thresholds[i];
-                        }
+                    for (var i = 0; i < 6; ++i) {
+                        var value = buffer[2 * i] + buffer[2 * i + 1] * 256;
+                        var threshold = _config.Thresholds[i];
 
-                        ChuniIO.Send(_sensors);
+                        _sensors[i].Value = value;
+                        _sensors[i].Difference = value - threshold;
+                        _sensors[i].Active = value > threshold;
                     }
+
+                    ChuniIO.Send(_sensors);
                 }
             }
             catch (Exception ex) {
                 // TODO log
-                Dispatcher.Invoke(() => { MessageBox.Show(ex.Message); });
-                throw;
+                Dispatcher?.Invoke(() => { MessageBox.Show(ex.Message); });
             }
             finally {
                 serial.Close();

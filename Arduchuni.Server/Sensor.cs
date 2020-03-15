@@ -23,6 +23,16 @@ namespace Arduchuni.Server {
             }
         }
 
+        private int _difference;
+
+        public int Difference {
+            get => _difference;
+            set {
+                _difference = value;
+                OnPropertyChanged(nameof(Difference));
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName = null) {
